@@ -21,14 +21,4 @@ def generate_launch_description():
             package='scoring',
             executable='scoring',
             name='scoring'),
-        launch_ros.actions.Node(
-            package='multi_robot_challenge_23',
-            executable='wallfollower',
-            namespace='tb3_0',
-            name='wallfollower'),
-        launch_ros.actions.Node(
-            package='multi_robot_challenge_23',
-            executable='wallfollower',
-            namespace='tb3_1',
-            name='wallfollower'),
     ])
