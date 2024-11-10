@@ -19,6 +19,7 @@ class ExplorerController(Node):
 
 
         #self.srv_explorer = self.create_service(SetBool, "/explorer", self.srv_callback)
+        #test
 
         # Lidar readings
         self.lidar_left = 100

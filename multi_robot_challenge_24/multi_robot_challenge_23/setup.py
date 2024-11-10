@@ -34,6 +34,7 @@ setup(
             'marker_report = multi_robot_challenge_23.MarkerReporter:main',
             'controller = multi_robot_challenge_23.controller:main',
             'explorer = multi_robot_challenge_23.explorer:main',
+            #'bug2 = multi_robot_challenge_23.bug2:main',
         ],
     },
 )
