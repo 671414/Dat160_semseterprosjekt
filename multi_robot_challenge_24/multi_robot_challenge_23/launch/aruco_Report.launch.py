@@ -31,4 +31,10 @@ def generate_launch_description():
             name='marker_report_tb3_1',
             parameters=[{"namespace": "tb3_1"}],
         ),
+        Node(
+            package='scoring',
+            executable='scoring',
+            name='scoring'
+        ),
+
     ])
