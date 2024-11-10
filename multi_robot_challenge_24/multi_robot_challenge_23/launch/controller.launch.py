@@ -13,5 +13,10 @@ def generate_launch_description():
             executable='explorer',
             namespace='tb3_1',
             name='explorer'),
+        
+        launch_ros.actions.Node(
+            package='scoring',
+            executable='scoring',
+            name='scoring'),
     ])
 #

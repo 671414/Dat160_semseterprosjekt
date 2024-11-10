@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import Pose, Point
 from std_msgs.msg import Int64
 from scoring_interfaces.srv import SetMarkerPosition
 
@@ -33,6 +33,8 @@ class MarkerReporter(Node):
         self.create_subscription(Pose, f'/{self.namespace}/marker_map_pose', self.marker_pose_callback, 10)
         self.create_subscription(Int64, f'/{self.namespace}/marker_id', self.marker_id_callback, 10)
 
+        self.big_fire_position_pub = self.create_publisher(Point, '/big_fire_position', 10)
+
 
 
 
@@ -64,6 +66,10 @@ class MarkerReporter(Node):
         if self.marker_data["id"] in self.reported_markers:
             self.get_logger().info(f"[{self.namespace}] Marker ID {self.marker_data['id']} already reported. Skipping...")
             return
+        
+        # Publish big fire position if marker ID is 4
+        if self.marker_data["id"] == 4:
+            self.publish_big_fire_position(self.marker_data["pose"])
 
         self.report_marker()
 
@@ -94,6 +100,18 @@ class MarkerReporter(Node):
                 self.get_logger().info(f"[{self.namespace}] Marker reporting failed.")
         except Exception as e:
             self.get_logger().error(f"[{self.namespace}] Service call failed: {e}")
+
+
+
+    def publish_big_fire_position(self, pose):
+        # Publishes the big fire's position as a Point
+        fire_position = Point()
+        fire_position.x = pose.position.x
+        fire_position.y = pose.position.y
+        fire_position.z = pose.position.z
+        self.big_fire_position_pub.publish(fire_position)
+        self.get_logger().info(f"Big Fire position published: x={fire_position.x}, y={fire_position.y}, z={fire_position.z}")
+
 
 
 def main(args=None):

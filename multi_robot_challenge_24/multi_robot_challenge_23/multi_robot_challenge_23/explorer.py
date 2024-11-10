@@ -9,10 +9,13 @@ import time
 class ExplorerController(Node):
     def __init__(self):
         super().__init__("explorer")
-        
 
-        self.scan = self.create_subscription(LaserScan, 'scan', self.clbk_laser, 10)
-        self.cmd_vel_pub = self.create_publisher(Twist, 'cmd_vel', 10)
+        self.declare_parameter('namespace', '')
+        self.namespace = self.get_parameter('namespace').get_parameter_value().string_value
+
+
+        self.scan = self.create_subscription(LaserScan, f'/{self.namespace}/scan', self.clbk_laser, 10)
+        self.cmd_vel_pub = self.create_publisher(Twist, f'/{self.namespace}/cmd_vel', 10)
 
         self.get_logger().info(f'ExplorerController initialized for {self.get_namespace()}')
 
