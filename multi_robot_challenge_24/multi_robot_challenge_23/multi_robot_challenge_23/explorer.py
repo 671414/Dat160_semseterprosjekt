@@ -3,17 +3,18 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from std_srvs.srv import SetBool
+import time
 
 
 class ExplorerController(Node):
     def __init__(self):
-        super().__init__("wall_follower")
+        super().__init__("explorer")
         
 
         self.scan = self.create_subscription(LaserScan, 'scan', self.clbk_laser, 10)
         self.cmd_vel_pub = self.create_publisher(Twist, 'cmd_vel', 10)
 
-        self.get_logger().info(f'ExplorerController initialized for {self.get_namespace()}/scan and {self.get_namespace()}/cmd_vel')
+        self.get_logger().info(f'ExplorerController initialized for {self.get_namespace()}')
 
 
 
@@ -29,24 +30,26 @@ class ExplorerController(Node):
         self.wall_following_state = "search for wall"
          
         
-        self.turn = 1.1
+        self.turn = 1.0
         
 
 
 
-        self.speed = 0.55 
+        self.speed = 0.60
 
         # distance from the wall.
-        self.dist = 0.65 
+        self.dist = 0.70
          
         # too close to the wall.
-        self.dist_s = 0.55 
+        self.dist_s = 0.40
 
         self.state = 0
         
-        if self.get_namespace() == "/tb3_0":
-            self.turn = -self.turn/1.5
-            self.state = 1
+        if self.get_namespace() == "/tb3_1":
+            self.turn = self.turn
+            self.spinLeft()
+
+            #self.state = 1
 
         #self.active = False
 
@@ -58,6 +61,14 @@ class ExplorerController(Node):
     #     response.success = True
     #     response.message = "Explorer"
     #     return response
+
+    def spinLeft(self):
+        vel_msg = Twist()
+        vel_msg.angular.z = self.turn
+        self.cmd_vel_pub.publish(vel_msg)
+        time.sleep(2.6)
+        vel_msg.angular.z = 0.0
+        self.cmd_vel_pub.publish(vel_msg)
 
     def timer_callback(self):
         
@@ -71,6 +82,7 @@ class ExplorerController(Node):
         if self.lidar_leftfront > d and self.lidar_front > d and self.lidar_rightfront > d:
             self.wall_following_state = "search for wall"
             vel_msg.linear.x = self.speed
+            vel_msg.angular.z = -0.01
             if self.state != 0:
                 vel_msg.angular.z = -self.turn # turn right to find wall
                 self.wall_following_state = "missing wall, turn right, search for wall"
@@ -121,12 +133,12 @@ class ExplorerController(Node):
         self.lidar_rightfront = msg.ranges[315]
         self.lidar_right = msg.ranges[270]
 
-        if self.get_namespace() == "/tb3_0":
-            self.lidar_left = msg.ranges[270]
-            self.lidar_leftfront = msg.ranges[315]
-            self.lidar_front = msg.ranges[0]
-            self.lidar_rightfront = msg.ranges[45]
-            self.lidar_right = msg.ranges[90]
+        # if self.get_namespace() == "/tb3_8":
+        #     self.lidar_left = msg.ranges[270]
+        #     self.lidar_leftfront = msg.ranges[315]
+        #     self.lidar_front = msg.ranges[0]
+        #     self.lidar_rightfront = msg.ranges[45]
+        #     self.lidar_right = msg.ranges[90]
 
          
     
